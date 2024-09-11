@@ -1,0 +1,24 @@
+FROM debian:bullseye
+
+# Install dependencies
+RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get install -y wget gettext-base php7.4 php-mysql php-fpm bash mariadb-client
+
+# Create directory tree
+RUN mkdir -p /etc/conf/ && mkdir -p /run/php && chown www-data:www-data /run/php
+
+# Download wordpress CLI
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x wp-cli.phar && mv -f wp-cli.phar /usr/local/bin/wp
+
+# Download wordpress
+RUN wget https://fr.wordpress.org/wordpress-6.0-fr_FR.tar.gz -P /var/www
+RUN cd /var/www && tar -xzf wordpress-6.0-fr_FR.tar.gz && rm wordpress-6.0-fr_FR.tar.gz && chown -R www-data:www-data /var/www/wordpress
+
+COPY /tools/init.sh /etc/tools/
+COPY /conf/wordpress.conf /etc/php/7.4/fpm/pool.d/www.conf
+
+RUN chmod +x /etc/tools/init.sh
+CMD ["sh", "/etc/tools/init.sh"]
+
+
