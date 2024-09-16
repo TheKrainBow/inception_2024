@@ -3,6 +3,9 @@ chown -R mysql:mysql /var/lib/mysql
 mysql_install_db --user=mysql --datadir=/var/lib/mysql >> /dev/null
 /usr/bin/mysqld_safe --datadir=/var/lib/mysql &
 
+
+PASSWORD=$(cat /run/secrets/db_password)
+
 while true; do
     if /usr/bin/mysqladmin ping --silent; then
         break
